@@ -2,30 +2,29 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Load images
 original_image = cv2.imread('image_formation/images/original_image.jpg')
 transformed_image = cv2.imread('image_formation/images/transformed_image.jpg')
 
-transX = 50
-transY = 30
-angle = 15
-scale = 1.1
-
 rows, cols = original_image.shape[:2]
 
-M_translation = np.float32([[1, 0, transX], [0, 1, transY]])
-translated = cv2.warpAffine(original_image, M_translation, (cols, rows))
+# --- MANUAL STEP ---
+# Pixel coordinates for chessboard corners in each image
+# (Replace with accurate points from your actual images)
+pts_orig = np.float32([[0, 0], [cols-1, 0], [0, rows-1], [cols-1, rows-1]])
+pts_trans = np.float32([[300, 100], [900, 500], [800, 1300], [1300, 1500]])
+# Above coordinates must be set to the four corners in both images
 
-print(f"Applied translation: tx={transX}, ty={transY}")
+# Perspective transform matrix
+M_perspective = cv2.getPerspectiveTransform(pts_orig, pts_trans)
+reverse_engineered = cv2.warpPerspective(original_image, M_perspective, (cols, rows))
 
-M_rotation = cv2.getRotationMatrix2D((cols / 2, rows / 2), angle, scale)
-rotated = cv2.warpAffine(original_image, M_rotation, (cols, rows))
-
-print(f"Applied rotation: angle={angle}, scale={scale}")
-
+# Convert for matplotlib display (BGR->RGB)
 orig_rgb = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
 transformed_rgb = cv2.cvtColor(transformed_image, cv2.COLOR_BGR2RGB)
-reverse_engineered_rgb = cv2.cvtColor(rotated, cv2.COLOR_BGR2RGB)
+reverse_engineered_rgb = cv2.cvtColor(reverse_engineered, cv2.COLOR_BGR2RGB)
 
+# Plot results
 plt.figure(figsize=(15, 5))
 plt.subplot(1, 3, 1)
 plt.imshow(orig_rgb)
