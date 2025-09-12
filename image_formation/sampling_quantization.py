@@ -35,3 +35,6 @@ plt.ylim([min_signal-0.2, max_signal+0.2])
 plt.legend()
 plt.grid(True)
 plt.show()
+
+print("Based on the Nyquist theorem, the minimum sampling frequency should be at least twice the signal frequency.")
+
